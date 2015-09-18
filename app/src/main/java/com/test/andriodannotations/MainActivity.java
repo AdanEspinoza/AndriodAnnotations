@@ -1,73 +1,64 @@
 package com.test.andriodannotations;
 
-import android.os.Parcel;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.ListView;
 
-import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.Extra;
+import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.rest.RestService;
+
+import java.util.ArrayList;
 
 @EActivity(R.layout.activity_main)
 public class MainActivity extends AppCompatActivity{
 
-    public static final String SEND_DATA_EXTRA = "send_data_extra";
-    ContactParcelable contact;
-    String name, lastName;
-    boolean favoriteSelection = false;
+    ArrayList<Contact> personasWS;
+    MyAdapter myAdapter;
 
-    @ViewById(R.id.name_et)
-    EditText name_et;
+    @ViewById(R.id.personas_lv)
+    ListView personas_lv;
 
-    @ViewById(R.id.lastName_et)
-    EditText lastName_et;
+    @RestService
+    RestClient restClient;
 
-    @ViewById(R.id.favorite_iv)
-    ImageView favorite_iv;
+    @AfterViews
+    public void init(){
+        personasWS = new ArrayList<>();
+        getPersonasBackground();
+    }
 
-    @Extra(SEND_DATA_EXTRA)
-    String info;
-    //Contact contact;
+    @Background
+    public void getPersonasBackground(){
+        personasWS = restClient.contactos();
+//        var = restClient.var();
+        mostrarResultado();
+    }
 
-
-    @Click(R.id.favorite_iv)
-    void favoriteClicked(){
-        if(!favoriteSelection) {
-            favoriteSelection = true;
-            favorite_iv.setImageResource(R.mipmap.favon);
-        }else if(favoriteSelection){
-            favoriteSelection = false;
-            favorite_iv.setImageResource(R.mipmap.favoff);
+    @UiThread
+    public void mostrarResultado(){
+//        Toast.makeText(this, personasWS.get(1).toString(), Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, var.length(), Toast.LENGTH_LONG).show();
+        String var ="\n";
+        if(personasWS!=null){
+            myAdapter = new MyAdapter(this, android.R.layout.simple_list_item_1,personasWS);
+            personas_lv.setAdapter(myAdapter);
+//            for(Contact contact: personasWS){
+//                var = var+contact.name+"\n";
+//
+//            }
+//            Toast.makeText(this, var, Toast.LENGTH_LONG).show();
         }
     }
 
-    @Click(R.id.btnSend)
-    void btnClicked(){
-        name = name_et.getText().toString();
-        lastName = lastName_et.getText().toString();
-        if(name.length() >0 ){
-            if(lastName.length()>0){
-                contact = new ContactParcelable(Parcel.obtain());
-                contact.setFavorite(favoriteSelection);
-                contact.setLastName(lastName);
-                contact.setName(name);
-                //info = contact.toString();
-                //Intent myIntent = SecondActivity_.buildIntent(this, contact);
-                //startActivity(myIntent);
-              SecondActivity_.intent(this).extra(SEND_DATA_EXTRA,contact).start();
-            }else{
-                Toast.makeText(this,"Last Name is mandatory",Toast.LENGTH_SHORT).show();
-            }
-        }else {
-            Toast.makeText(this,"Name is mandatory",Toast.LENGTH_SHORT).show();
-        }
+    //@Rest(rootUrl = "https://person-service.herokuapp.com/",converters = GsonHttp)
 
-    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -83,9 +74,8 @@ public class MainActivity extends AppCompatActivity{
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_newperson) {
+            startActivity(new Intent(this, AddPersonActivity_.class));
         }
 
         return super.onOptionsItemSelected(item);

@@ -7,6 +7,8 @@
     <string name="save">Save</string>
     <string name="favorite_yes">Favorite: Yes</string>
     <string name="favorite_no">Favorite: No</string>
-    <string name="action_settings">Settings</string>
-    <string name="title_activity_second">SecondActivity</string>
+    <string name="action_newperson">Add Person</string>
+    <string name="action_close">Close</string>
+    <string name="title_activity_second">Add Person</string>
+    <string name="emptyList">The list is Empty</string>
 </resources>

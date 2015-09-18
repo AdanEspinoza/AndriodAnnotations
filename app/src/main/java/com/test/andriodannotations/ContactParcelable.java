@@ -6,15 +6,6 @@ import android.os.Parcelable;
 public class ContactParcelable implements Parcelable {
     private String name;
     private String lastName;
-    private boolean favorite;
-
-    public boolean isFavorite() {
-        return favorite;
-    }
-
-    public void setFavorite(boolean favorite) {
-        this.favorite = favorite;
-    }
 
     public String getLastName() {
         return lastName;
@@ -34,7 +25,6 @@ public class ContactParcelable implements Parcelable {
     protected ContactParcelable(Parcel in) {
         name = in.readString();
         lastName = in.readString();
-        favorite = in.readByte() != 0x00;
     }
 
     @Override
@@ -46,7 +36,6 @@ public class ContactParcelable implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
         dest.writeString(lastName);
-        dest.writeByte((byte) (favorite ? 0x01 : 0x00));
     }
 
     @SuppressWarnings("unused")
